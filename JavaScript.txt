@@ -1,0 +1,106 @@
+// 🎤 Voice Recording
+let mediaRecorder;
+let audioChunks = [];
+
+const recordBtn = document.getElementById("recordBtn");
+const audioPlayback = document.getElementById("audioPlayback");
+
+recordBtn.addEventListener("click", async () => {
+  if (!mediaRecorder || mediaRecorder.state === "inactive") {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+    mediaRecorder = new MediaRecorder(stream);
+    mediaRecorder.start();
+
+    recordBtn.textContent = "Stop Recording";
+
+    mediaRecorder.ondataavailable = e => {
+      audioChunks.push(e.data);
+    };
+
+    mediaRecorder.onstop = () => {
+      const blob = new Blob(audioChunks, { type: "audio/webm" });
+      const url = URL.createObjectURL(blob);
+      audioPlayback.src = url;
+
+      // Save locally
+      localStorage.setItem("lastRecording", url);
+
+      document.getElementById("recordSaved").textContent = "Recording saved!";
+      audioChunks = [];
+    };
+
+  } else {
+    mediaRecorder.stop();
+    recordBtn.textContent = "Start Recording";
+
+    updateStreak();
+  }
+});
+
+
+// 📖 Journal
+function saveJournal() {
+  const text = document.getElementById("journalInput").value;
+  localStorage.setItem("journal", text);
+
+  document.getElementById("journalSaved").textContent = "Saved!";
+  updateStreak();
+}
+
+
+// 🌱 Daily Challenge (changes once per day)
+function loadChallenge() {
+  const challenges = [
+    "Say hello to someone 👋",
+    "Ask one question 🎓",
+    "Smile at someone 😊",
+    "Start a small conversation 💬"
+  ];
+
+  const today = new Date().toDateString();
+  let saved = localStorage.getItem("challengeDate");
+
+  if (saved !== today) {
+    const random = Math.floor(Math.random() * challenges.length);
+    localStorage.setItem("todayChallenge", challenges[random]);
+    localStorage.setItem("challengeDate", today);
+  }
+
+  document.getElementById("challengeText").textContent =
+    localStorage.getItem("todayChallenge");
+}
+
+
+// 🔥 Streak System
+function updateStreak() {
+  const today = new Date().toDateString();
+  const lastDate = localStorage.getItem("lastActiveDate");
+
+  let streak = parseInt(localStorage.getItem("streak")) || 0;
+
+  if (lastDate !== today) {
+    streak += 1;
+    localStorage.setItem("streak", streak);
+    localStorage.setItem("lastActiveDate", today);
+  }
+
+  document.getElementById("streak").textContent = `🔥 Streak: ${streak} days`;
+}
+
+
+// Load data on start
+window.onload = () => {
+  // Journal
+  const savedJournal = localStorage.getItem("journal");
+  if (savedJournal) {
+    document.getElementById("journalInput").value = savedJournal;
+  }
+
+  // Streak
+  const streak = localStorage.getItem("streak") || 0;
+  document.getElementById("streak").textContent = `🔥 Streak: ${streak} days`;
+
+  // Challenge
+  loadChallenge();
+};
