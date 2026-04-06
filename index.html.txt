@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Confido</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <h1>Confido 🌱</h1>
+  <p id="streak">🔥 Streak: 0 days</p>
+
+  <div class="container">
+
+    <!-- Practice -->
+    <section>
+      <h2>🎤 Practice</h2>
+      <p id="prompt">Talk about your day in 30 seconds</p>
+      <button id="recordBtn">Start Recording</button>
+      <audio id="audioPlayback" controls></audio>
+      <p id="recordSaved"></p>
+    </section>
+
+    <!-- Journal -->
+    <section>
+      <h2>📖 Journal</h2>
+      <textarea id="journalInput" placeholder="How do you feel today?"></textarea>
+      <button onclick="saveJournal()">Save</button>
+      <p id="journalSaved"></p>
+    </section>
+
+    <!-- Challenge -->
+    <section>
+      <h2>🌱 Daily Challenge</h2>
+      <p id="challengeText"></p>
+    </section>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
